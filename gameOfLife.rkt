@@ -16,19 +16,6 @@
    )
   )
 
-(define (neighbours cell board)
-  (define (neighbours-iter cell board acc)
-    (cond 
-      [(null? board) acc]
-      [else
-       (cond 
-         [(are-neighbours cell (car board)) (neighbours-iter cell (cdr board) (cons (car board) acc))]
-         [else  (neighbours-iter cell (cdr board) acc)])]
-      )
-    )
-  (neighbours-iter cell board '())
-  )
-
 
 (define (neighbours-alive cell board)
   (define (neighbours-alive-iter cell board acc)
@@ -110,16 +97,16 @@
    (check-equal? #f (are-neighbours (make-cell 0 0 'alive) (make-cell 0 0 'alive)))
    
    ;; filter negihbors of a cell against a list of empty cells
-   (check-equal? '() (neighbours (make-cell 0 0 'alive) '()))
+   (check-equal? '() (neighbours-alive (make-cell 0 0 'alive) '()))
    
    ;; filter negihbors of a cell against a list of empty cells
-   (check-equal?   (neighbours (make-cell 1 0 'alive) (list(make-cell 0 0 'alive)) ) (list(make-cell 0 0 'alive)) )
+   (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list(make-cell 0 0 'alive)) ) (list(make-cell 0 0 'alive)) )
    
    
    ;; filter negihbors of a cell against a list of empty cells
-   (check-equal?   (neighbours (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) )) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
+   (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) )) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
    
-   (check-equal?   (neighbours (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 3 'dead)) ) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
+   (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 3 'dead)) ) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
    
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list (make-cell 0 0 'dead) (make-cell 0 1 'alive) (make-cell 0 3 'dead))) (list(make-cell 0 1 'alive)))
    
