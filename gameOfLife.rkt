@@ -35,23 +35,23 @@
   )
 
 (define (next-generation board)  
-  (define (next-generation-iter examined-cells board iter)
+  (define (next-generation-iter to-be-examined-cells board iter)
     (cond 
-      [(null? examined-cells) iter]
+      [(null? to-be-examined-cells) iter]
       [else 
-       (define cell (car examined-cells))   
+       (define cell (car to-be-examined-cells))   
        (define num-alive-neighbors (num-neighbours-alive cell board))
        (cond 
          [(alive? cell)                                                
           (cond                                                            
-            [(= 2 num-alive-neighbors) (next-generation-iter (cdr examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [(= 3 num-alive-neighbors) (next-generation-iter (cdr examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [else (next-generation-iter (cdr examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))]                               
+            [(= 2 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
+            [(= 3 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
+            [else (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))]                               
             )]
          [(dead? cell)
           (cond                                                            
-            [(= 3 num-alive-neighbors) (next-generation-iter (cdr examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [else (next-generation-iter (cdr examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))] 
+            [(= 3 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
+            [else (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))] 
             )
           ]
          )
