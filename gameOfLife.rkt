@@ -16,7 +16,6 @@
    )
   )
 
-
 (define (neighbours-alive cell board)
   (define (neighbours-alive-iter cell board acc)
     (cond [(null? board) acc]
@@ -84,30 +83,34 @@
    (check-equal? 1 1)
    
    (check-equal?  (make-cell 1 2 3) (make-cell 1 2 3))
-   
+
+   ;; two cell at the same position
    (check-equal? #t (same-position (make-cell 0 0 'alive) (make-cell 0 0 'alive)))
    
-   (check-equal? #t (are-neighbours (make-cell 0 0 'alive) (make-cell 0 1 'dead)))
+   (check-equal? #t (are-neighbours (make-cell 0 0 'alive) (make-cell 0 1 'dead)))   
    
    (check-equal? #t (are-neighbours (make-cell 0 0 'alive) (make-cell 1 1 'dead)))
    
+   ;; the following cells are not neighbours
    (check-equal? #f (are-neighbours (make-cell 0 0 'alive) (make-cell 1 2 'dead)))
    
    ;; cell is not neighbors with itself
    (check-equal? #f (are-neighbours (make-cell 0 0 'alive) (make-cell 0 0 'alive)))
    
-   ;; filter negihbors of a cell against a list of empty cells
+   ;; a cell has no neighbors in an empty board 
    (check-equal? '() (neighbours-alive (make-cell 0 0 'alive) '()))
    
-   ;; filter negihbors of a cell against a list of empty cells
+   ;; a cell has just one neighbors in a board containing a cell which is actually a neighbour
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list(make-cell 0 0 'alive)) ) (list(make-cell 0 0 'alive)) )
    
    
    ;; filter negihbors of a cell against a list of empty cells
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) )) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
    
+   ;; just get the neighbors which are alive, so will skip the "0 3" because is not neighbours and is not alive 
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 3 'dead)) ) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
    
+   ;; will not include the 0 0 cell because despite it is neighbors, it is not alive, and skip the 0 3 as well
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list (make-cell 0 0 'dead) (make-cell 0 1 'alive) (make-cell 0 3 'dead))) (list(make-cell 0 1 'alive)))
    
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list (make-cell 0 0 'dead) (make-cell 0 1 'alive) (make-cell 0 3 'dead) (make-cell 1 1 'alive))) (list (make-cell 1 1 'alive) (make-cell 0 1 'alive) ))
@@ -126,17 +129,16 @@
    ;; next generation of a three dead cell board
    (check-equal?  (next-generation (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead) (make-cell 0 2 'dead))) (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead) (make-cell 0 2 'dead)))
    
-   ;; next generation of three alive cells
-   ;   (check-equal? (num-neighbours-alive (make-cell 0 1 'alive)  (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 2 'alive)) ) 2)
-   
+   ;; count the number of neighbours alive (two, excluding the 0 2 which is alive but is not neighbour)   
    (check-equal? (num-neighbours-alive (make-cell 0 1 'alive)  (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 2 'alive)) ) 2)
    
-   
+   ;; the board AAA becomes DAD
    (check-equal?  (next-generation (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) (make-cell 0 2 'alive))) (make-board (make-cell 0 0 'dead) (make-cell 0 1 'alive) (make-cell 0 2 'dead)))
    
    ;; check the neighbours alive of the blinker start configuration
    (check-equal? (num-neighbours-alive (make-cell 1 0 'dead) blink-start) 3)
    
+   ;; test the "blinker" example 
    (check-equal? (neighbours-alive (make-cell 1 0 'dead) blink-start) (list (make-cell 2 1 'alive) (make-cell 1 1 'alive) (make-cell 0 1 'alive))) 
       
    ))
