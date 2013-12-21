@@ -39,19 +39,21 @@
     (cond 
       [(null? to-be-examined-cells) iter]
       [else 
-       (define cell (car to-be-examined-cells))   
+       (define cell (car to-be-examined-cells))
        (define num-alive-neighbors (num-neighbours-alive cell board))
+       (define next-gen-make-alive  (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))) ))
+       (define next-gen-make-dead  (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))) ))
        (cond 
          [(alive? cell)                                                
           (cond                                                            
-            [(= 2 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [(= 3 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [else (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))]                               
+            [(= 2 num-alive-neighbors) next-gen-make-alive]            
+            [(= 3 num-alive-neighbors) next-gen-make-alive]
+            [else next-gen-make-dead] 
             )]
          [(dead? cell)
           (cond                                                            
-            [(= 3 num-alive-neighbors) (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))))]
-            [else (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))))] 
+            [(= 3 num-alive-neighbors) next-gen-make-alive]                                       
+            [else next-gen-make-dead] 
             )
           ]
          )
@@ -62,9 +64,8 @@
   )
 
 
-
-
 (require rackunit)
+
 
 (define blink-start (list (make-cell 0 0 'dead) (make-cell 0 1 'alive) (make-cell 0 2 'dead)
                           (make-cell 1 0 'dead) (make-cell 1 1 'alive) (make-cell 1 2 'dead)
@@ -76,6 +77,7 @@
                         (make-cell 2 0 'dead) (make-cell 2 1 'dead) (make-cell 2 2 'dead))) 
 
 
+
 (define tests
   
   (test-suite
@@ -83,7 +85,7 @@
    (check-equal? 1 1)
    
    (check-equal?  (make-cell 1 2 3) (make-cell 1 2 3))
-
+   
    ;; two cell at the same position
    (check-equal? #t (same-position (make-cell 0 0 'alive) (make-cell 0 0 'alive)))
    
@@ -140,7 +142,7 @@
    
    ;; test the "blinker" example 
    (check-equal? (neighbours-alive (make-cell 1 0 'dead) blink-start) (list (make-cell 2 1 'alive) (make-cell 1 1 'alive) (make-cell 0 1 'alive))) 
-      
+   
    ))
 
 (require rackunit/text-ui)
