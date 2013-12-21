@@ -21,7 +21,8 @@
     (cond [(null? board) acc]
           [else
            (cond 
-             [(and (are-neighbours cell (car board)) (alive? (car board))) (neighbours-alive-iter cell (cdr board) (cons (car board) acc))]
+             [(and (are-neighbours cell (car board)) (alive? (car board))) 
+              (neighbours-alive-iter cell (cdr board) (cons (car board) acc))]
              [else  (neighbours-alive-iter cell (cdr board) acc)]
              )
            ]
@@ -36,18 +37,21 @@
 
 (define (next-generation board)  
   (define (next-generation-iter to-be-examined-cells board iter)
+
     (cond 
       [(null? to-be-examined-cells) iter]
       [else 
        (define cell (car to-be-examined-cells))
+       (define add-cell-as-alive (append iter (list (make-cell (row cell) (column cell) 'alive))))
+       (define add-cell-as-dead (append iter (list (make-cell (row cell) (column cell) 'dead))))
        (define num-alive-neighbors (num-neighbours-alive cell board))
-       (define next-gen-make-alive  (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'alive))) ))
-       (define next-gen-make-dead  (next-generation-iter (cdr to-be-examined-cells) board (append iter (list (make-cell (row cell) (column cell) 'dead))) ))
+       (define next-gen-make-alive  (next-generation-iter (cdr to-be-examined-cells) board add-cell-as-alive ))
+       (define next-gen-make-dead  (next-generation-iter (cdr to-be-examined-cells) board  add-cell-as-dead ))
+
        (cond 
          [(alive? cell)                                                
           (cond                                                            
-            [(= 2 num-alive-neighbors) next-gen-make-alive]            
-            [(= 3 num-alive-neighbors) next-gen-make-alive]
+            [(or (= 2 num-alive-neighbors) (= 3 num-alive-neighbors)) next-gen-make-alive]            
             [else next-gen-make-dead] 
             )]
          [(dead? cell)
