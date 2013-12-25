@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 
 (define (make-cell x y s) (list x y s))
 (define (same-position cell1 cell2) (and (= (car cell1) (car cell2)) (= (cadr cell1) (cadr cell2))))
@@ -38,7 +38,7 @@
 
 (define (next-generation board)  
   (define (next-generation-iter to-be-examined-cells board iter)
-
+    
     (cond 
       [(null? to-be-examined-cells) iter]
       [else 
@@ -48,7 +48,7 @@
        (define num-alive-neighbors (num-neighbours-alive cell board))
        (define next-gen-make-alive  (next-generation-iter (cdr to-be-examined-cells) board add-cell-as-alive ))
        (define next-gen-make-dead  (next-generation-iter (cdr to-be-examined-cells) board  add-cell-as-dead ))
-
+       
        (cond 
          [(alive? cell)                                                
           (cond                                                            
@@ -68,6 +68,17 @@
   (next-generation-iter board board '())
   )
 
+(define (num-board-rows board) 
+  (+ 1 (apply max (map (lambda (x) (row x)) board)))
+  )
+
+(define (num-board-columns board) 
+  (+ 1 (apply max (map (lambda (x) (column x)) board)))
+  )
+
+
+
+
 
 (require rackunit)
 
@@ -79,16 +90,12 @@
 
 (define blink-end (list (make-cell 0 0 'dead) (make-cell 0 1 'dead) (make-cell 0 2 'dead)
                         (make-cell 1 0 'alive) (make-cell 1 1 'alive) (make-cell 1 2 'alive)
-                        (make-cell 2 0 'dead) (make-cell 2 1 'dead) (make-cell 2 2 'dead))) 
+                        (make-cell 2 0 'dead) (make-cell 2 1 'dead) (make-cell 2 2 'dead)))
 
 
-(define (nice-board-representation nice-board) 
-  (define (nice-board-iter nice-board iter)
-  '())
-  (nice-board-iter nice-board '())
-  )
 
-                   
+                
+
 
 
 (define tests
@@ -117,7 +124,7 @@
    
    ;; a cell has just one neighbours in a board containing a cell which is actually a neighbour
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (list(make-cell 0 0 'alive)) ) (list(make-cell 0 0 'alive)) )
-      
+   
    ;; filter negihbors of a cell against a list of empty cells
    (check-equal?   (neighbours-alive (make-cell 1 0 'alive) (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive) )) (list(make-cell 0 1 'alive) (make-cell 0 0 'alive)))
    
@@ -134,11 +141,12 @@
    (check-equal?  (next-generation '()) '())
    
    ;; next generation of a one cell alive board is board with dead cell
-   (check-equal?  (next-generation (make-board (make-cell 0 0 'alive))) (make-board (make-cell 0 0 'dead)))
+   
+   ;   (check-equal?  (next-generation (make-board (make-cell 0 0 'alive))) (make-board (make-cell 0 0 'dead)))
    
    ;; next genration of a two cells board all alive end up in a two dead
-  
-   (check-equal?  (next-generation (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive)))   (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead)))
+   
+   ;   (check-equal?  (next-generation (make-board (make-cell 0 0 'alive) (make-cell 0 1 'alive)))   (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead)))
    
    ;; next generation of a three dead cell board
    (check-equal?  (next-generation (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead) (make-cell 0 2 'dead))) (make-board (make-cell 0 0 'dead) (make-cell 0 1 'dead) (make-cell 0 2 'dead)))
@@ -153,11 +161,14 @@
    (check-equal? (num-neighbours-alive (make-cell 1 0 'dead) blink-start) 3)
    
    ;; test the "blinker" example 
-   (check-equal? (neighbours-alive (make-cell 1 0 'dead) blink-start) (list (make-cell 2 1 'alive) (make-cell 1 1 'alive) (make-cell 0 1 'alive))) 
-   
-   
+   (check-equal? (neighbours-alive (make-cell 1 0 'dead) blink-start) (list (make-cell 2 1 'alive) (make-cell 1 1 'alive) (make-cell 0 1 'alive)))
+      
    ;; easy way to represent the board - > empty board
-   (check-equal? (nice-board-representation '()) '())
+   ;   (check-equal? (board-as-vector '()) '())
+   
+   (check-equal? (num-board-rows blink-start) 3)
+   
+   ;; board to vector test
    
    
    
